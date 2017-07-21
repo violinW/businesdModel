@@ -1,0 +1,67 @@
+{
+  "TableName": "Campaign",
+  "UniqueKey": "campaignId",
+  "ForeignKey": [
+    {
+      "name": "StoreCampaign",
+      "Table": "StoreCampaign",
+      "ThisTableKey": "id",
+      "ForeignTableKey": "campaignId"
+    },
+    {
+      "name": "LimitTimeDiscount",
+      "Table": "LimitTimeDiscount",
+      "ThisTableKey": "id",
+      "ForeignTableKey": "campaignId"
+    },
+    {
+      "name": "MessageContent",
+      "Table": "MessageContent",
+      "ThisTableKey": "id",
+      "ForeignTableKey": "campaignId"
+    },
+    {
+      "name": "CampaignMaterials",
+      "Table": "CampaignMaterials",
+      "ThisTableKey": "id",
+      "ForeignTableKey": "campaignId"
+    }
+  ],
+  "MappingKey": [
+    {
+      "name": "CampaignTarget",
+      "ThisTableKey": "id",
+      "MiddleTable": "CampaignTarget",
+      "MiddleKey": "campaignId",
+      "MappingKey": "targetId",
+      "MappingTable": "PromotionTarget",
+      "MappingTableKey": "targetId"
+    },
+    {
+      "name": "CampaignTag",
+      "ThisTableKey": "id",
+      "MiddleTable": "CampaignTag",
+      "MiddleKey": "campaignId",
+      "MappingKey": "tagId",
+      "MappingTable": "ActivityTag",
+      "MappingTableKey": "romens_id"
+    }
+  ],
+  "mode": {
+    "type_one": {
+      "ForeignKey": [
+        "LimitTimeDiscount"
+      ],
+      "MappingKey": []
+    },
+    "type_two": {
+      "ForeignKey": [
+        "LimitTimeDiscount",
+        "MessageContent"
+      ],
+      "MappingKey": [
+        "CampaignTarget"
+      ]
+    }
+  }
+}
