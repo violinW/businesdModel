@@ -16,5 +16,13 @@
     "lodash": "=4.15.0",
     "logger-romens": "=1.0.1",
     "bluebird": "=3.5.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/violinW/businesdModel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/violinW/businesdModel/issues"
+  },
+  "homepage": "https://github.com/violinW/businesdModel#readme"
 }
