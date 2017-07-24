@@ -1,3 +1,4 @@
+'use strict';
 const _ = require('lodash');
 const Logger = require('logger-romens');
 const logger = new Logger();

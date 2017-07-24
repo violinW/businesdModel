@@ -1,3 +1,4 @@
+'use strict';
 var enumMaker = require('./enum');
 
 module.exports = {
