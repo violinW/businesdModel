@@ -82,7 +82,37 @@ const enumType = function (obj) {
       list.push({key: key, value: value});
     });
     return list;
-  }
+  };
+  this.getKeyList = function () {
+    if (typeof obj == "undefined") {
+      log("传入的枚举类型定义对象有误");
+      return key;
+    }
+    if (typeof obj.value != "object") {
+      log("枚举类型" + obj.name + "定义错误!");
+      return key;
+    }
+    var list = [];
+    _.each(obj.value, function (value, key) {
+      list.push(key);
+    });
+    return list;
+  };
+  this.getValueList = function () {
+    if (typeof obj == "undefined") {
+      log("传入的枚举类型定义对象有误");
+      return key;
+    }
+    if (typeof obj.value != "object") {
+      log("枚举类型" + obj.name + "定义错误!");
+      return key;
+    }
+    var list = [];
+    _.each(obj.value, function (value) {
+      list.push(value);
+    });
+    return list;
+  };
 };
 /**
  * 实例化一个枚举类型
