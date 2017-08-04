@@ -27,6 +27,21 @@ module.exports = (knex)=> {
     });
     return {
       /**
+       * 获取全部数据列表(不包含外键关系)
+       * @param orderby 排序字段
+       * @param orderDesc 排序规则 desc或者asc
+       * @returns {*}
+       */
+      getAllDataList(orderby, orderDesc){
+        logger.trace("[BASIC USE CASE]enter getList");
+
+        return models.main.getAllList(orderby, orderDesc, mainColumns)
+          .then((result)=> {
+            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getAllDataList result:` + JSON.stringify(result));
+            return result
+          })
+      },
+      /**
        * 获取简单列表(不包含外键关系)
        * @param filter 字段筛选条件 例：{"sex": "male", "age": "18"}
        * @param keywords 关键字

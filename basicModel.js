@@ -7,6 +7,28 @@ module.exports = (knex)=> {
   return (dbName, tableName, extMethods)=> {
     const basicMethods = {
       /**
+       * 获取全部数据列表(不包含外键关系)
+       * @param orderby 排序字段
+       * @param orderDesc 排序规则 desc或者asc
+       * @param columns 字段列表
+       * @returns {Promise.<T>}
+       */
+      getAllList(orderby, orderDesc, columns){
+        logger.trace("[BASIC EVENT] get all list data." +
+          "\ntip: with this method, you can get all the data of a table." +
+          "\n     but you can not associate foreign key relationships." +
+          `\ntable name: ${tableName}`);
+
+        return knex.withSchema(dbName)
+          .table(tableName)
+          .select(columns||"*")
+          .orderBy(orderby || 'updatedOn', orderDesc || 'desc')
+            .then((result)=> {
+            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getAllList result:` + JSON.stringify(result));
+            return result;
+          })
+      },
+      /**
        * 获取简单列表(不包含外键关系)
        * @param fieldFilter 字段筛选条件 例：{"sex": "male", "age": "18"}
        * @param keywords 关键字
@@ -15,6 +37,7 @@ module.exports = (knex)=> {
        * @param page 当前查询页码
        * @param orderby 排序字段
        * @param orderDesc 排序规则 desc或者asc
+       * @param columns 字段列表
        * @returns {*} knex promise
        */
       getSimpleList(fieldFilter, keywords, keywordsField, pagesize, page, orderby, orderDesc, columns){
@@ -40,6 +63,7 @@ module.exports = (knex)=> {
        * 获取简单详情(不包含外键关系)
        * @param conditionField 条件字段(必须是具有唯一性的字段)
        * @param value 条件值
+       * @param columns 字段列表
        * @returns {*} knex promise
        */
       getSimpleDetail(conditionField, value, columns){
