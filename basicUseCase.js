@@ -271,14 +271,14 @@ module.exports = (knex)=> {
                   Promise.map(businessModel.MappingKey, (table)=> {
                     let newData = data[`${table.MiddleTable}Data`];
                     _.each(newData, (item)=> {
-                      item[table.MiddleKey] = id;
+                      item[table.MiddleKey] = data.mainData[table.ThisTableKey];
                     });
                     return models.mapping[`${table.MiddleTable}Model`].addData(newData)
                   }),
                   Promise.map(businessModel.ForeignKey, (table)=> {
                     let newData = data[`${table.Table}Data`];
                     _.each(newData, (item)=> {
-                      item[table.ForeignTableKey] = id;
+                      item[table.ForeignTableKey] = data.mainData[table.ThisTableKey];
                     });
                     logger.debug(newData);
                     return models.foreign[`${table.Table}Model`].addData(newData)
