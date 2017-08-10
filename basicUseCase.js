@@ -241,14 +241,16 @@ module.exports = (knex)=> {
           })
       },
       /**
+
        * 添加简单列表
        * @param data 列表数据[Array]
+       * @param trx 事务
        * @returns {*}
        */
-      addSimpleList(data){
+      addSimpleList(data, trx){
         logger.trace("[BASIC USE CASE]enter addSimpleList");
 
-        return models.main.addData(data);
+        return models.main.addData(data, trx);
       },
       /**
        * 添加联表数据
@@ -297,12 +299,13 @@ module.exports = (knex)=> {
        * 更新简单数据
        * @param Id 数据Id
        * @param data 更新的数据
+       * @param trx 事务
        * @returns {*}
        */
-      putSimpleData(Id, data){
+      putSimpleData(Id, data, trx){
         logger.trace("[BASIC USE CASE]enter putSimpleData");
 
-        return models.main.updateData(data, businessModel.UniqueKey, Id);
+        return models.main.updateData(data, businessModel.UniqueKey, Id, trx);
       },
       /**
        * 更新联表数据
