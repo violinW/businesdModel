@@ -57,7 +57,8 @@ module.exports = (dataType)=>{
             if (displayData instanceof Array) {
                 var sourceArray = [];
                 _.each(displayData, function (item) {
-                    sourceArray.push(me.displayToSource(item, true));
+                  var source = me.displayToSource(item, true);
+                    sourceArray.push(JSON.parse(JSON.stringify(source)));
                 });
                 this.sourceData = sourceArray;
                 return sourceArray;
@@ -106,7 +107,7 @@ module.exports = (dataType)=>{
                 var displayArray = [];
                 _.each(sourceData, function (item) {
                     var disp = me.sourceToDisplay(item);
-                    displayArray.push(disp);
+                    displayArray.push(JSON.parse(JSON.stringify(disp)));
                 });
                 this.sourceData = sourceData;
                 return displayArray;
