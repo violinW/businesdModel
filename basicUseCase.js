@@ -264,7 +264,7 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter addJoinData");
 
         return knex.transaction((trx)=> {
-          models.main.addData(data && data.mainData)
+          models.main.addData(data && data.mainData, trx)
             .then((results)=> {
               const id = results[0];
               return Promise.all([
@@ -273,7 +273,7 @@ module.exports = (knex)=> {
                     _.each(newData, (item)=> {
                       item[table.MiddleKey] = id;
                     });
-                    return models.mapping[`${table.MiddleTable}Model`].addData(newData)
+                    return models.mapping[`${table.MiddleTable}Model`].addData(newData, trx)
                   }),
                   Promise.map(businessModel.ForeignKey, (table)=> {
                     let newData = data[`${table.Table}Data`];
@@ -281,7 +281,7 @@ module.exports = (knex)=> {
                       item[table.ForeignTableKey] = id;
                     });
                     logger.debug(newData);
-                    return models.foreign[`${table.Table}Model`].addData(newData)
+                    return models.foreign[`${table.Table}Model`].addData(newData, trx)
                   })
                 ])
                 .then((result)=> {
