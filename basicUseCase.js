@@ -278,7 +278,7 @@ module.exports = (knex)=> {
                   Promise.map(businessModel.ForeignKey, (table)=> {
                     let newData = data[`${table.Table}Data`];
                     _.each(newData, (item)=> {
-                      item[table.ThisTableKey] = id;
+                      item[table.ForeignTableKey] = id;
                     });
                     logger.debug(newData);
                     return models.foreign[`${table.Table}Model`].addData(newData)

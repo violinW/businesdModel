@@ -15,18 +15,18 @@ module.exports = (knex)=> {
        */
       getAllList(orderby, orderDesc, columns){
         logger.trace("[BASIC EVENT] get all list data." +
-          "\ntip: with this method, you can get all the data of a table." +
-          "\n     but you can not associate foreign key relationships." +
-          `\ntable name: ${tableName}`);
+            "\ntip: with this method, you can get all the data of a table." +
+            "\n     but you can not associate foreign key relationships." +
+            `\ntable name: ${tableName}`);
 
         return knex.withSchema(dbName)
-          .table(tableName)
-          .select(columns||"*")
-          .orderBy(orderby || 'updatedOn', orderDesc || 'desc')
+            .table(tableName)
+            .select(columns || "*")
+            .orderBy(orderby || 'updatedOn', orderDesc || 'desc')
             .then((result)=> {
-            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getAllList result:` + JSON.stringify(result));
-            return result;
-          })
+              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getAllList result:` + JSON.stringify(result));
+              return result;
+            })
       },
       /**
        * 获取简单列表(不包含外键关系)
@@ -42,22 +42,25 @@ module.exports = (knex)=> {
        */
       getSimpleList(fieldFilter, keywords, keywordsField, pagesize, page, orderby, orderDesc, columns){
         logger.trace("[BASIC EVENT] get simple list data." +
-          "\ntip: with this method, you can get a list that meets the filter criteria." +
-          "\n     but you can not associate foreign key relationships." +
-          `\ntable name: ${tableName}`);
+            "\ntip: with this method, you can get a list that meets the filter criteria." +
+            "\n     but you can not associate foreign key relationships." +
+            `\ntable name: ${tableName}`);
 
-        return knex.withSchema(dbName)
-          .table(tableName)
-          .select(columns||"*")
-          .where(fieldFilter)
-          .andWhere(keywords ? {[keywordsField]: keywords} : {})
-          .orderBy(orderby || 'updatedOn', orderDesc || 'desc')
-          .limit(pagesize)
-          .offset((page - 1) * pagesize)
-          .then((result)=> {
-            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleList result:` + JSON.stringify(result));
-            return result;
-          })
+        let sql = knex.withSchema(dbName)
+            .table(tableName)
+            .select(columns || "*")
+            .where(fieldFilter)
+            .andWhere(keywords ? {[keywordsField]: keywords} : {})
+            .orderBy(orderby || 'updatedOn', orderDesc || 'desc');
+        if (pagesize && page) {
+          sql = sql
+              .limit(pagesize)
+              .offset((page - 1) * pagesize)
+        }
+        return sql.then((result)=> {
+          logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleList result:` + JSON.stringify(result));
+          return result;
+        })
       },
       /**
        * 获取简单详情(不包含外键关系)
@@ -68,18 +71,18 @@ module.exports = (knex)=> {
        */
       getSimpleDetail(conditionField, value, columns){
         logger.trace("[BASIC EVENT] get simple detail data." +
-          "\ntip:with this method, you can get simple detail data by condition." +
-          "\n     but you can not associate foreign key relationships." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can get simple detail data by condition." +
+            "\n     but you can not associate foreign key relationships." +
+            `\ntable name: ${tableName}`);
 
         return knex.withSchema(dbName)
-          .table(tableName)
-          .select(columns||"*")
-          .where(conditionField, value)
-          .then((result)=> {
-            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleDetail result:` + JSON.stringify(result));
-            return result;
-          })
+            .table(tableName)
+            .select(columns || "*")
+            .where(conditionField, value)
+            .then((result)=> {
+              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleDetail result:` + JSON.stringify(result));
+              return result;
+            })
       },
       /**
        * 获取某字段的值
@@ -90,17 +93,17 @@ module.exports = (knex)=> {
        */
       getFieldValue(conditionField, value, queryField){
         logger.trace("[BASIC EVENT] get field value data." +
-          "\ntip:with this method, you can get a field value by condition." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can get a field value by condition." +
+            `\ntable name: ${tableName}`);
 
         return knex.withSchema(dbName)
-          .table(tableName)
-          .select(queryField)
-          .where(conditionField, value)
-          .then((result)=> {
-            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getFieldValue result:` + JSON.stringify(result));
-            return result;
-          })
+            .table(tableName)
+            .select(queryField)
+            .where(conditionField, value)
+            .then((result)=> {
+              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getFieldValue result:` + JSON.stringify(result));
+              return result;
+            })
       },
       /**
        * 获取某字段列表
@@ -111,17 +114,17 @@ module.exports = (knex)=> {
        */
       getFieldListByCondition(conditionField, value, queryField){
         logger.trace("[BASIC EVENT] get ids by condition." +
-          "\ntip:with this method, you can get a list of field value by condition." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can get a list of field value by condition." +
+            `\ntable name: ${tableName}`);
 
         return knex.withSchema(dbName)
-          .table(tableName)
-          .select(queryField)
-          .where(conditionField, value)
-          .then((result)=> {
-            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getFieldListByCondition result:` + JSON.stringify(result));
-            return result;
-          })
+            .table(tableName)
+            .select(queryField)
+            .where(conditionField, value)
+            .then((result)=> {
+              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getFieldListByCondition result:` + JSON.stringify(result));
+              return result;
+            })
       },
       /**
        * 插入单条数据
@@ -131,30 +134,30 @@ module.exports = (knex)=> {
        */
       addData(data, trx){
         logger.trace("[BASIC EVENT] add data.TABLE:" + tableName +
-          "\ntip:with this method, you can add a data to the table." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can add a data to the table." +
+            `\ntable name: ${tableName}`);
 
         //如果事务对象不为空，则采用事务模式
         if (trx) {
           return trx.withSchema(dbName)
-            .table(tableName)
-            .insert(data)
-            .then(function (result) {
-              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} addData result:` + JSON.stringify(result));
-              return Promise.resolve({
-                type: 'add',
-                tableName: tableName,
-                result: result
+              .table(tableName)
+              .insert(data)
+              .then(function (result) {
+                logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} addData result:` + JSON.stringify(result));
+                return Promise.resolve({
+                  type: 'add',
+                  tableName: tableName,
+                  result: result
+                })
               })
-            })
         } else {
           return knex.withSchema(dbName)
-            .table(tableName)
-            .insert(data)
-            .then((result)=> {
-              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} addData result:` + JSON.stringify(result));
-              return result;
-            })
+              .table(tableName)
+              .insert(data)
+              .then((result)=> {
+                logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} addData result:` + JSON.stringify(result));
+                return result;
+              })
         }
       },
       /**
@@ -167,32 +170,32 @@ module.exports = (knex)=> {
        */
       updateData(data, conditionField, value, trx){
         logger.trace("[BASIC EVENT] update data." +
-          "\ntip:with this method, you can update a data by condition." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can update a data by condition." +
+            `\ntable name: ${tableName}`);
 
         //如果事务对象不为空，则采用事务模式
         if (trx) {
           return trx.withSchema(dbName)
-            .table(tableName)
-            .update(data)
-            .where(conditionField, value)
-            .then(function (result) {
-              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} updateData result:` + JSON.stringify(result));
-              Promise.resolve({
-                type: 'update',
-                tableName: tableName,
-                result: result
+              .table(tableName)
+              .update(data)
+              .where(conditionField, value)
+              .then(function (result) {
+                logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} updateData result:` + JSON.stringify(result));
+                Promise.resolve({
+                  type: 'update',
+                  tableName: tableName,
+                  result: result
+                })
               })
-            })
         } else {
           return knex.withSchema(dbName)
-            .table(tableName)
-            .update(data)
-            .where(conditionField, value)
-            .then((result)=> {
-              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} updateData result:` + JSON.stringify(result));
-              return result;
-            })
+              .table(tableName)
+              .update(data)
+              .where(conditionField, value)
+              .then((result)=> {
+                logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} updateData result:` + JSON.stringify(result));
+                return result;
+              })
         }
       },
       /**
@@ -204,32 +207,32 @@ module.exports = (knex)=> {
        */
       deleteData(conditionField, value, trx){
         logger.trace("[BASIC EVENT] delete data." +
-          "\ntip:with this method, you can delete data by condition." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can delete data by condition." +
+            `\ntable name: ${tableName}`);
 
         //如果事务对象不为空，则采用事务模式
         if (trx) {
           return trx.withSchema(dbName)
-            .table(tableName)
-            .where(conditionField, value)
-            .del()
-            .then(function (result) {
-              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} deleteData result:` + JSON.stringify(result));
-              Promise.resolve({
-                type: 'del',
-                tableName: tableName,
-                result: result
+              .table(tableName)
+              .where(conditionField, value)
+              .del()
+              .then(function (result) {
+                logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} deleteData result:` + JSON.stringify(result));
+                Promise.resolve({
+                  type: 'del',
+                  tableName: tableName,
+                  result: result
+                })
               })
-            })
         } else {
           return knex.withSchema(dbName)
-            .table(tableName)
-            .where(conditionField, value)
-            .del()
-            .then((result)=> {
-              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} deleteData result:` + JSON.stringify(result));
-              return result;
-            })
+              .table(tableName)
+              .where(conditionField, value)
+              .del()
+              .then((result)=> {
+                logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} deleteData result:` + JSON.stringify(result));
+                return result;
+              })
         }
       },
       /**
@@ -241,27 +244,27 @@ module.exports = (knex)=> {
        */
       deleteBatchData(conditionField, list, trx){
         logger.trace("[BASIC EVENT] delete batch data." +
-          "\ntip:with this method, you can delete batch data by condition." +
-          `\ntable name: ${tableName}`);
+            "\ntip:with this method, you can delete batch data by condition." +
+            `\ntable name: ${tableName}`);
 
         //如果事务对象不为空，则采用事务模式
         if (trx) {
           return trx.withSchema(dbName)
-            .table(tableName)
-            .whereIn(conditionField, list)
-            .del()
-            .then(function (result) {
-              return Promise.resolve({
-                type: 'del',
-                tableName: tableName,
-                result: result
+              .table(tableName)
+              .whereIn(conditionField, list)
+              .del()
+              .then(function (result) {
+                return Promise.resolve({
+                  type: 'del',
+                  tableName: tableName,
+                  result: result
+                })
               })
-            })
         } else {
           return knex.withSchema(dbName)
-            .table(tableName)
-            .whereIn(conditionField, list)
-            .del()
+              .table(tableName)
+              .whereIn(conditionField, list)
+              .del()
         }
       }
     };
@@ -278,22 +281,22 @@ module.exports = (knex)=> {
        */
       getDetailWithMappingTable(conditionField, value, mappingTableName, key, mappingKey, columns){
         logger.trace("[BASIC EVENT] [mapping] get detail with mapping table data." +
-          "\ntip:with this method, you can get detail with mapping table info data by condition." +
-          `\nmapping table name: ${mappingTableName}, middle table name: ${tableName}`);
+            "\ntip:with this method, you can get detail with mapping table info data by condition." +
+            `\nmapping table name: ${mappingTableName}, middle table name: ${tableName}`);
 
-        const allColumns=[`${tableName}.*`];
-        _.each(columns,(col)=>{
+        const allColumns = [`${tableName}.*`];
+        _.each(columns, (col)=> {
           allColumns.push(`${mappingTableName}.${col}`)
         });
         return knex.withSchema(dbName)
-          .table(tableName)
-          .leftJoin(mappingTableName, `${tableName}.${key}`, `${mappingTableName}.${mappingKey}`)
-          .select(allColumns)
-          .where(conditionField, value)
-          .then((result)=> {
-            logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getDetailWithMappingTable result:` + JSON.stringify(result));
-            return result;
-          })
+            .table(tableName)
+            .leftJoin(mappingTableName, `${tableName}.${key}`, `${mappingTableName}.${mappingKey}`)
+            .select(allColumns)
+            .where(conditionField, value)
+            .then((result)=> {
+              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getDetailWithMappingTable result:` + JSON.stringify(result));
+              return result;
+            })
       }
     };
     return _.assign({}, basicMethods, mixMethods, extMethods);
