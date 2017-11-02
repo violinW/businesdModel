@@ -1,6 +1,6 @@
 'use strict';
-const Logger = require('logger-romens');
-const logger = new Logger();
+const Logger = require('log4js');
+const logger = Logger.getLogger();
 const _ = require('lodash');
 /**
  * 开起和关闭log

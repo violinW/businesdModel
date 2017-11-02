@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
-const Logger = require('logger-romens');
-const logger = new Logger();
+const Logger = require('log4js');
+const logger = Logger.getLogger();
 
 module.exports = (dataType)=>{
     /**
