@@ -1,6 +1,6 @@
 {
   "name": "express-business-model",
-  "version": "1.0.8beta",
+  "version": "1.0.9beta",
   "description": "用于辅助新项目快速实现接口",
   "main": "index.js",
   "directories": {
