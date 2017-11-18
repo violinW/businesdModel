@@ -156,7 +156,7 @@ module.exports = (knex)=> {
             //查询所有外键关系数据
             if (businessModel.ForeignKey && businessModel.ForeignKey.length) {
               return Promise.map(businessModel.ForeignKey, (table)=> {
-                return models.foreign[`${table.Table}Model`].getSimpleDetail([table.ForeignTableKey], detail[table.ThisTableKey])
+                return models.foreign[`${table.Table}Model`].getSimpleDetail(table.ForeignTableKey, detail[table.ThisTableKey])
                   .then((list)=> {
                     detail[`${table.Table}List`] = list;
                   })
@@ -172,7 +172,7 @@ module.exports = (knex)=> {
             //查询所有反外键关系数据
             if (businessModel.AntiForeignKey && businessModel.AntiForeignKey.length) {
               return Promise.map(businessModel.AntiForeignKey, (table)=> {
-                return models.antiForeign[`${table.Table}Model`].getSimpleDetail([table.MainTableKey], detail[table.ThisTableKey])
+                return models.antiForeign[`${table.Table}Model`].getSimpleDetail(table.MainTableKey, detail[table.ThisTableKey])
                   .then((list)=> {
                     detail[`${table.Table}Info`] = list[0];
                   })
