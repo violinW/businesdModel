@@ -282,6 +282,14 @@ module.exports = (knex)=> {
                     });
                     logger.debug(newData);
                     return models.foreign[`${table.Table}Model`].addData(newData, trx)
+                  }),
+                  Promise.map(businessModel.AntiForeignKey, (table)=> {
+                    let newData = data[`${table.Table}Data`];
+                    _.each(newData, (item)=> {
+                      item[table.MainTableKey] = data.mainData[`${table.Table}_id`];
+                    });
+                    logger.debug(newData);
+                    return models.antiForeign[`${table.Table}Model`].addData(newData, trx)
                   })
                 ])
                 .then((result)=> {
