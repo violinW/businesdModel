@@ -83,7 +83,7 @@ module.exports = (knex)=> {
                   return Promise.map(businessModel.ForeignKey, (table)=> {
                    let columns = (table.dataStructure == "DEFAULT"?
                        "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
-                    return models.foreign[`${table.Table}Model`].getSimpleDetail([table.ForeignTableKey], mainItem[table.ThisTableKey], columns)
+                    return models.foreign[`${table.Table}Model`].getSimpleDetail(table.ForeignTableKey, mainItem[table.ThisTableKey], columns)
                       .then((list)=> {
                         mainItem[`${table.Table}List`] = list;
                       })
@@ -103,7 +103,7 @@ module.exports = (knex)=> {
                   return Promise.map(businessModel.AntiForeignKey, (table)=> {
                     let columns = (table.dataStructure == "DEFAULT"?
                       "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
-                    return models.antiForeign[`${table.Table}Model`].getSimpleDetail([table.MainTableKey], mainItem[table.ThisTableKey], columns)
+                    return models.antiForeign[`${table.Table}Model`].getSimpleDetail(table.MainTableKey, mainItem[table.ThisTableKey], columns)
                       .then((list)=> {
                         mainItem[`${table.Table}Info`] = list[0];
                       })
