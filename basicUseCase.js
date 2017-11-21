@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 module.exports = (knex)=> {
   const basicModel = require('./basicModel')(knex);
   return (dbName, businessModel, dataStructure)=> {
-    const mainColumns = (businessModel.dataStructure == "DEFAULT"?
+    const mainColumns = (businessModel.dataStructure == "DEFAULT" ?
         "*" : dataStructure.getModel(businessModel.dataStructure).getColumnsList());
 
     let models = {
@@ -36,10 +36,10 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter getList");
 
         return models.main.getAllList(orderby, orderDesc, mainColumns)
-          .then((result)=> {
-            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getAllDataList result:` + JSON.stringify(result));
-            return result
-          })
+            .then((result)=> {
+              logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getAllDataList result:` + JSON.stringify(result));
+              return result
+            })
       },
       /**
        * 获取简单列表(不包含外键关系)
@@ -56,10 +56,10 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter getList");
 
         return models.main.getSimpleList(filter, keywords, keywordsField, pagesize, page, orderby, orderDesc, mainColumns)
-          .then((result)=> {
-            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getList result:` + JSON.stringify(result));
-            return result
-          })
+            .then((result)=> {
+              logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getList result:` + JSON.stringify(result));
+              return result
+            })
       },
       /**
        * 查询某表数据及其外键、映射关系数据
@@ -76,71 +76,71 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter getJoinList");
 
         return models.main.getSimpleList(filter, keywords, keywordsField, page, pagesize, orderby, orderDesc, mainColumns)
-          .then((mainData)=> {
-            //查询所有外键关系数据
-            if (businessModel.ForeignKey && businessModel.ForeignKey.length) {
-              return Promise.map(mainData, (mainItem)=> {
+            .then((mainData)=> {
+              //查询所有外键关系数据
+              if (businessModel.ForeignKey && businessModel.ForeignKey.length) {
+                return Promise.map(mainData, (mainItem)=> {
                   return Promise.map(businessModel.ForeignKey, (table)=> {
-                   let columns = (table.dataStructure == "DEFAULT"?
-                       "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
+                    let columns = (table.dataStructure == "DEFAULT" ?
+                        "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
                     return models.foreign[`${table.Table}Model`].getSimpleDetail(table.ForeignTableKey, mainItem[table.ThisTableKey], columns)
-                      .then((list)=> {
-                        mainItem[`${table.Table}List`] = list;
-                      })
+                        .then((list)=> {
+                          mainItem[`${table.Table}List`] = list;
+                        })
                   })
                 })
-                .then(()=> {
-                  return mainData;
-                });
-            } else {
-              return mainData;
-            }
-          })
-          .then((mainData)=> {
-            //查询所有反外键关系数据
-            if (businessModel.AntiForeignKey && businessModel.AntiForeignKey.length) {
-              return Promise.map(mainData, (mainItem)=> {
+                    .then(()=> {
+                      return mainData;
+                    });
+              } else {
+                return mainData;
+              }
+            })
+            .then((mainData)=> {
+              //查询所有反外键关系数据
+              if (businessModel.AntiForeignKey && businessModel.AntiForeignKey.length) {
+                return Promise.map(mainData, (mainItem)=> {
                   return Promise.map(businessModel.AntiForeignKey, (table)=> {
-                    let columns = (table.dataStructure == "DEFAULT"?
-                      "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
+                    let columns = (table.dataStructure == "DEFAULT" ?
+                        "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
                     return models.antiForeign[`${table.Table}Model`].getSimpleDetail(table.MainTableKey, mainItem[table.ThisTableKey], columns)
-                      .then((list)=> {
-                        mainItem[`${table.Table}Info`] = list[0];
-                      })
+                        .then((list)=> {
+                          mainItem[`${table.Table}Info`] = list[0];
+                        })
                   })
                 })
-                .then(()=> {
-                  return mainData;
-                });
-            } else {
-              return mainData;
-            }
-          })
-          .then((mainData)=> {
-            //查询所有映射关系数据
-            if (businessModel.MappingKey && businessModel.MappingKey.length) {
-              return Promise.map(mainData, (mainItem)=> {
+                    .then(()=> {
+                      return mainData;
+                    });
+              } else {
+                return mainData;
+              }
+            })
+            .then((mainData)=> {
+              //查询所有映射关系数据
+              if (businessModel.MappingKey && businessModel.MappingKey.length) {
+                return Promise.map(mainData, (mainItem)=> {
                   return Promise.map(businessModel.MappingKey, (table)=> {
-                    let columns = (table.dataStructure == "DEFAULT"?
-                      "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
+                    let columns = (table.dataStructure == "DEFAULT" ?
+                        "*" : dataStructure.getModel(table.dataStructure).getColumnsList());
                     return models.mapping[`${table.MiddleTable}Model`].getDetailWithMappingTable(table.MiddleKey,
-                      mainItem[table.ThisTableKey], table.MappingTable, table.MappingKey, table.MappingTableKey, columns)
-                      .then((list)=> {
-                        mainItem[`${table.MiddleTable}List`] = list;
-                      })
+                        mainItem[table.ThisTableKey], table.MappingTable, table.MappingKey, table.MappingTableKey, columns)
+                        .then((list)=> {
+                          mainItem[`${table.MiddleTable}List`] = list;
+                        })
                   })
                 })
-                .then(()=> {
-                  return mainData;
-                });
-            } else {
-              return mainData;
-            }
-          })
-          .then((mainData)=> {
-            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getJoinList result:` + JSON.stringify(mainData));
-            return mainData
-          })
+                    .then(()=> {
+                      return mainData;
+                    });
+              } else {
+                return mainData;
+              }
+            })
+            .then((mainData)=> {
+              logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getJoinList result:` + JSON.stringify(mainData));
+              return mainData
+            })
       },
       /**
        * 获取联表详情
@@ -151,63 +151,62 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter getJoinDetail");
 
         return models.main.getSimpleDetail(businessModel.UniqueKey, Id, mainColumns)
-          .then((mainData)=> {
-            const detail = mainData[0];
-            //查询所有外键关系数据
-            if (businessModel.ForeignKey && businessModel.ForeignKey.length) {
-              return Promise.map(businessModel.ForeignKey, (table)=> {
-                return models.foreign[`${table.Table}Model`].getSimpleDetail(table.ForeignTableKey, detail[table.ThisTableKey])
-                  .then((list)=> {
-                    detail[`${table.Table}List`] = list;
-                  })
-                  .then(()=> {
-                    return detail;
-                  });
-              })
-            } else {
-              return detail;
-            }
-          })
-          .then((detail)=> {
-            //查询所有反外键关系数据
-            if (businessModel.AntiForeignKey && businessModel.AntiForeignKey.length) {
-              return Promise.map(businessModel.AntiForeignKey, (table)=> {
-                return models.antiForeign[`${table.Table}Model`].getSimpleDetail(table.MainTableKey, detail[table.ThisTableKey])
-                  .then((list)=> {
-                    detail[`${table.Table}Info`] = list[0];
-                  })
-                  .then(()=> {
-                    return detail;
-                  });
-              })
-            } else {
-              return detail;
-            }
-          })
-          .then((detail)=> {
-            logger.debug(detail);
-            //查询所有映射关系数据
-            if (businessModel.MappingKey && businessModel.MappingKey.length) {
-              logger.debug(businessModel.MappingKey)
-              return Promise.map(businessModel.MappingKey, (table)=> {
-                logger.debug(table)
-                return models.mapping[`${table.MiddleTable}Model`].getDetailWithMappingTable(table.MiddleKey,
-                  detail[table.ThisTableKey], table.MappingTable, table.MappingKey, table.MappingTableKey)
-                  .then((list)=> {
-                    detail[`${table.MiddleTable}List`] = list;
-                  })
-                  .then(()=> {
-                    return detail;
-                  });
-              })
-            } else {
-              return detail;
-            }
-          })
-          .then((detail)=> {
-            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getJoinList result:` + JSON.stringify(detail));
-            return detail
-          })
+            .then((mainData)=> {
+              const detail = mainData[0];
+              //查询所有外键关系数据
+              if (businessModel.ForeignKey && businessModel.ForeignKey.length) {
+                return Promise.map(businessModel.ForeignKey, (table)=> {
+                  return models.foreign[`${table.Table}Model`].getSimpleDetail(table.ForeignTableKey, detail[table.ThisTableKey])
+                      .then((list)=> {
+                        detail[`${table.Table}List`] = list;
+                        return;
+                      })
+                })
+              } else {
+                return detail;
+              }
+            })
+            .then((detail)=> {
+              //查询所有反外键关系数据
+              if (businessModel.AntiForeignKey && businessModel.AntiForeignKey.length) {
+                return Promise.map(businessModel.AntiForeignKey, (table)=> {
+                  return models.antiForeign[`${table.Table}Model`].getSimpleDetail(table.MainTableKey, detail[table.ThisTableKey])
+                      .then((list)=> {
+                        detail[`${table.Table}Info`] = list[0];
+                        return;
+                      })
+                })
+                    .then((result)=> {
+                      return detail;
+                    })
+              } else {
+                return detail;
+              }
+            })
+            .then((detail)=> {
+              logger.debug(detail);
+              //查询所有映射关系数据
+              if (businessModel.MappingKey && businessModel.MappingKey.length) {
+                logger.debug(businessModel.MappingKey)
+                return Promise.map(businessModel.MappingKey, (table)=> {
+                  logger.debug(table)
+                  return models.mapping[`${table.MiddleTable}Model`].getDetailWithMappingTable(table.MiddleKey,
+                      detail[table.ThisTableKey], table.MappingTable, table.MappingKey, table.MappingTableKey)
+                      .then((list)=> {
+                        detail[`${table.MiddleTable}List`] = list;
+                      })
+                      .then(()=> {
+                        return detail;
+                      });
+                })
+              } else {
+                return detail;
+              }
+            })
+            .then((detail)=> {
+              logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getJoinList result:` + JSON.stringify(detail));
+              return detail
+            })
 
       },
       /**
@@ -220,10 +219,10 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter getSimpleDetail");
 
         return models.main.getSimpleDetail(fieldName, Id, mainColumns)
-          .then((result)=> {
-            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getSimpleDetail result:` + JSON.stringify(result));
-            return result
-          })
+            .then((result)=> {
+              logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getSimpleDetail result:` + JSON.stringify(result));
+              return result
+            })
       },
       /**
        * 通过Id获取某条数据某个字段值
@@ -235,10 +234,10 @@ module.exports = (knex)=> {
         logger.trace("[BASIC USE CASE]enter getFieldById");
 
         return models.main.getFieldListByCondition(businessModel.UniqueKey, Id, FieldName)
-          .then((result)=> {
-            logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getCampaignFieldById result:` + JSON.stringify(result));
-            return result
-          })
+            .then((result)=> {
+              logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getCampaignFieldById result:` + JSON.stringify(result));
+              return result
+            })
       },
       /**
        * 添加简单列表
@@ -265,9 +264,9 @@ module.exports = (knex)=> {
 
         return knex.transaction((trx)=> {
           models.main.addData(data && data.mainData, trx)
-            .then((results)=> {
-              const id = results[0];
-              return Promise.all([
+              .then((results)=> {
+                const id = results[0];
+                return Promise.all([
                   Promise.map(businessModel.MappingKey, (table)=> {
                     let newData = data[`${table.MiddleTable}Data`];
                     _.each(newData, (item)=> {
@@ -292,13 +291,13 @@ module.exports = (knex)=> {
                     return models.antiForeign[`${table.Table}Model`].addData(newData, trx)
                   })
                 ])
-                .then((result)=> {
-                  logger.trace(result);
-                  return result;
-                })
-            })
-            .then(trx.commit)
-            .catch(trx.rollback);
+                    .then((result)=> {
+                      logger.trace(result);
+                      return result;
+                    })
+              })
+              .then(trx.commit)
+              .catch(trx.rollback);
         })
       },
       /**
@@ -328,23 +327,29 @@ module.exports = (knex)=> {
 
         return knex.transaction((trx)=> {
           Promise.all([
-              //更新 Campaign 数据
-              models.main.updateData(data && data.mainData, "Id", Id, trx),
-              Promise.map(businessModel.ForeignKey, (table)=> {
-                return Promise.all([
-                  models.foreign[`${table.Table}Model`].deleteData(table.ForeignTableKey, Id, trx),
-                  models.foreign[`${table.Table}Model`].addData(data[`${table.MiddleTable}Data`], trx)
-                ])
-              }),
-              Promise.map(businessModel.MappingKey, (table)=> {
-                return Promise.all([
-                  models.mapping[`${table.MiddleTable}Model`].deleteData(table.MiddleKey, Id, trx),
-                  models.mapping[`${table.MiddleTable}Model`].addData(data[`${table.MiddleTable}Data`], trx)
-                ])
-              })
-            ])
-            .then(trx.commit)
-            .catch(trx.rollback);
+            //更新 Campaign 数据
+            models.main.updateData(data && data.mainData, "Id", Id, trx),
+            Promise.map(businessModel.ForeignKey, (table)=> {
+              return Promise.all([
+                models.foreign[`${table.Table}Model`].deleteData(table.ForeignTableKey, Id, trx),
+                models.foreign[`${table.Table}Model`].addData(data[`${table.MiddleTable}Data`], trx)
+              ])
+            }),
+            Promise.map(businessModel.MappingKey, (table)=> {
+              return Promise.all([
+                models.mapping[`${table.MiddleTable}Model`].deleteData(table.MiddleKey, Id, trx),
+                models.mapping[`${table.MiddleTable}Model`].addData(data[`${table.MiddleTable}Data`], trx)
+              ])
+            }),
+            Promise.map(businessModel.AntiForeignKey, (table)=> {
+              return Promise.all([
+                models.antiForeign[`${table.Table}Model`].deleteData(table.MainTableKey, Id, trx),
+                models.antiForeign[`${table.Table}Model`].addData(data[`${table.Table}Data`], trx)
+              ])
+            })
+          ])
+              .then(trx.commit)
+              .catch(trx.rollback);
         })
       },
       /**
@@ -366,23 +371,47 @@ module.exports = (knex)=> {
        * @param Id 数据Id
        * @returns {*}
        */
-      deleteById(Id){
+      deleteById(Id, trx){
         logger.trace("[BASIC USE CASE]enter deleteById");
 
-        return knex.transaction((trx)=> {
-          Promise.all([
+        if (trx) {
+          return Promise.all([
+            //删除 Campaign 数据
+            models.main.deleteData(businessModel.UniqueKey, Id, trx),
+            Promise.map(businessModel.ForeignKey, function (table) {
+              return models.foreign[`${table.Table}Model`].deleteData(table.ForeignTableKey, Id, trx)
+            }),
+            Promise.map(businessModel.MappingKey, (table)=> {
+              return models.mapping[`${table.MiddleTable}Model`].deleteData(table.MiddleKey, Id, trx)
+            })
+          ])
+        } else {
+          return knex.transaction((trxx)=> {
+            Promise.all([
               //删除 Campaign 数据
-              models.main.deleteData(businessModel.ForeignKey, Id, trx),
+              models.main.deleteData(businessModel.UniqueKey, Id, trxx),
               Promise.map(businessModel.ForeignKey, function (table) {
-                return models.foreign[`${table.Table}Model`].deleteData(table.ForeignTableKey, Id, trx)
+                return models.foreign[`${table.Table}Model`].deleteData(table.ForeignTableKey, Id, trxx)
               }),
               Promise.map(businessModel.MappingKey, (table)=> {
-                return models.mapping[`${table.MiddleTable}Model`].deleteData(table.MiddleKey, Id, trx)
+                return models.mapping[`${table.MiddleTable}Model`].deleteData(table.MiddleKey, Id, trxx)
               })
             ])
-            .then(trx.commit)
-            .catch(trx.rollback);
-        })
+                .then(trxx.commit)
+                .catch(trxx.rollback);
+          })
+        }
+      },
+      /**
+       * 根据字段删除数据
+       * @param fieldName 字段名称
+       * @param value 字段内容
+       * @returns {*}
+       */
+      deleteByField(fieldName, value, trx){
+        logger.trace("[BASIC USE CASE]enter deleteById");
+
+        return models.main.deleteData(fieldName, value, trx);
       }
     }
   }
