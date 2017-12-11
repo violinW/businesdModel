@@ -342,10 +342,15 @@ module.exports = (knex)=> {
               ])
             }),
             Promise.map(businessModel.AntiForeignKey, (table)=> {
-              return Promise.all([
-                models.antiForeign[`${table.Table}Model`].deleteData(table.MainTableKey, Id, trx),
-                models.antiForeign[`${table.Table}Model`].addData(data[`${table.Table}Data`], trx)
-              ])
+              return models.antiForeign[`${table.Table}Model`].deleteData(table.MainTableKey, data.mainData[`${table.Table}_id`], trx)
+                  .then(()=>{
+                    let newData = data[`${table.Table}Data`];
+                    _.each(newData, (item)=> {
+                      item[table.MainTableKey] = data.mainData[`${table.Table}_id`];
+                    });
+                    logger.debug(newData);
+                    return models.antiForeign[`${table.Table}Model`].addData(newData, trx)
+                  })
             })
           ])
               .then(trx.commit)
