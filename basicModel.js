@@ -49,17 +49,21 @@ module.exports = (knex)=> {
         let sql = knex.withSchema(dbName)
             .table(tableName)
             .select(columns || "*")
-            .where(fieldFilter)
-            .andWhere(keywords ? {[keywordsField]: keywords} : {})
-            .orderBy(orderby || 'updatedOn', orderDesc || 'desc');
+            .where(fieldFilter);
+        if (keywords && keywordsField) {
+          sql = sql
+              .andWhere(keywordsField, 'like', `%${keywords || ""}%`)
+        }
         if (pagesize && page) {
           sql = sql
               .limit(pagesize)
               .offset((page - 1) * pagesize)
         }
-        return sql.then((result)=> {
-          logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleList result:` + JSON.stringify(result));
-          return result;
+        return sql
+            .orderBy(orderby || 'updatedOn', orderDesc || 'desc')
+            .then((result)=> {
+              logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleList result:` + JSON.stringify(result));
+              return result;
         })
       },
       /**
