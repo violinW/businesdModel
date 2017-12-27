@@ -40,31 +40,32 @@ module.exports = (knex)=> {
        * @param columns 字段列表
        * @returns {*} knex promise
        */
-      getSimpleList(fieldFilter, keywords, keywordsField, pagesize, page, orderby, orderDesc, columns){
+      getSimpleList(fieldFilter, keywords, keywordsField, page, pagesize, orderby, orderDesc, columns){
         logger.trace("[BASIC EVENT] get simple list data." +
             "\ntip: with this method, you can get a list that meets the filter criteria." +
             "\n     but you can not associate foreign key relationships." +
             `\ntable name: ${tableName}`);
+        logger.debug(`keywordsField: ${keywordsField}, keywords: ${keywords}, pageSize: ${pagesize}, page: ${page}`);
 
         let sql = knex.withSchema(dbName)
             .table(tableName)
             .select(columns || "*")
-            .where(fieldFilter);
+            .where(fieldFilter)
         if (keywords && keywordsField) {
           sql = sql
               .andWhere(keywordsField, 'like', `%${keywords || ""}%`)
         }
+        sql = sql.orderBy(orderby || 'updatedOn', orderDesc || 'desc')
         if (pagesize && page) {
           sql = sql
               .limit(pagesize)
               .offset((page - 1) * pagesize)
         }
         return sql
-            .orderBy(orderby || 'updatedOn', orderDesc || 'desc')
             .then((result)=> {
               logger.debug(`[END BASIC EVENT] ${dbName} ${tableName} getSimpleList result:` + JSON.stringify(result));
               return result;
-        })
+            })
       },
       /**
        * 获取简单详情(不包含外键关系)

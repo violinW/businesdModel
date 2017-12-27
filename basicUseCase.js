@@ -52,10 +52,10 @@ module.exports = (knex)=> {
        * @param orderDesc 排序规则 desc或者asc
        * @returns {*}
        */
-      getList(filter, keywords, keywordsField, pagesize, page, orderby, orderDesc){
+      getList(filter, keywords, keywordsField, page, pagesize, orderby, orderDesc){
         logger.trace("[BASIC USE CASE]enter getList");
 
-        return models.main.getSimpleList(filter, keywords, keywordsField, pagesize, page, orderby, orderDesc, mainColumns)
+        return models.main.getSimpleList(filter, keywords, keywordsField, page, pagesize, orderby, orderDesc, mainColumns)
             .then((result)=> {
               logger.debug(`[END BASIC USE CASE] ${businessModel.TableName} getList result:` + JSON.stringify(result));
               return result
