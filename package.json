@@ -1,6 +1,6 @@
 {
   "name": "express-business-model",
-  "version": "1.0.16beta",
+  "version": "1.0.17beta",
   "description": "用于辅助新项目快速实现接口",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,7 @@
   "dependencies": {
     "knex": "=0.12.6",
     "lodash": "=4.15.0",
-    "log4js": "=2.3.11"
+    "log4js": "=2.3.11",
     "bluebird": "=3.5.0"
   },
   "repository": {
