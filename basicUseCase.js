@@ -1,7 +1,7 @@
 'use strict';
 const _ = require('lodash');
-const Logger = require('log4js');
-const logger = Logger.getLogger();
+const log4js = require('log4js');
+const logger = log4js.getLogger();
 const Promise = require('bluebird');
 module.exports = (knex)=> {
   const basicModel = require('./basicModel')(knex);
