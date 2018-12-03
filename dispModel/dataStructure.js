@@ -46,118 +46,119 @@ module.exports = (dataType)=>{
         };
         /**
          * 元数据映射为显示数据
-         * @param sourceData
-         * @param changeSource
+         * @param displayData
+         * @param changeDisplay
          * @returns {{}}
          */
-        this.sourceToDisplay = function (sourceData, changeSource) {
+        this.displayToSource = function (displayData, changeDisplay) {
             var me = this;
-            !changeSource ? this.sourceData = sourceData : null;
-            //如果sourceData是一个数组则单独处理每一个子元素
-            if (sourceData instanceof Array) {
-                var displayArray = [];
-                _.each(sourceData, function (item) {
-                    displayArray.push(me.sourceToDisplay(item, true));
+            !changeDisplay ? this.displayData = displayData : null;
+            //如果displayData是一个数组则单独处理每一个子元素
+            if (displayData instanceof Array) {
+                var sourceArray = [];
+                _.each(displayData, function (item) {
+                  var source = me.displayToSource(item, true);
+                    sourceArray.push(JSON.parse(JSON.stringify(source)));
                 });
-                this.displayData = displayArray;
-                return displayArray;
+                this.sourceData = sourceArray;
+                return sourceArray;
             }
-            var displayData = {};//显示数据
+            var sourceData = {};//显示数据
             //将源数据遍历,映射到显示模型
-            _.each(sourceData, function (value, key) {
-                var dispFieldName = _.findKey(me.model.structure, function (item) {
+            _.each(displayData, function (value, key) {
+                var sourceFieldName = _.findKey(me.model.structure, function (item) {
                     return item.mappingName == key;
                 });
-                if (typeof dispFieldName != "undefined") {
-                    var dispModel = me.model.structure[dispFieldName];
-                    displayData[dispFieldName] = me.dataOfDisplay(value, dispModel.type);
+                if (typeof sourceFieldName != "undefined") {
+                    var sourceModel = me.model.structure[sourceFieldName];
+                    sourceData[sourceFieldName] = me.dataOfSource(value, sourceModel.type);
                 }
             });
-            this.displayData = this.displayDataCheck(displayData);
-            return displayData;
+            this.sourceData = this.sourceDataCheck(sourceData);
+            return sourceData;
         };
         /**
          * 检查需要处理的字段
-         * @param displayData
+         * @param sourceData
          * @returns {*}
          */
-        this.displayDataCheck = function (displayData) {
+        this.sourceDataCheck = function (sourceData) {
             _.each(this.model.structure, function (value, key) {
                 //mappingName不存在时通过mappingType处理数据
                 if (typeof value.mappingName == "undefined") {
-                    displayData[key] = value.mappingType(displayData);
+                    sourceData[key] = value.mappingType(sourceData);
                 }
-                if (typeof displayData[key] == "undefined") {
+                if (typeof sourceData[key] == "undefined") {
                     log("在源数据中找不到" + key + "(" + value.describe + ")对应的字段", 'warn');
                     //displayData[key] = undefined;
                 }
             });
-            return displayData;
-        };
-        /**
-         * 显示数据映射为源数据
-         * @param displayData
-         * @returns {{}}
-         */
-        this.displayToSource = function (displayData) {
-            var me = this;
-            this.displayData = displayData;
-            if (displayData instanceof Array) {
-                var sourceArray = [];
-                _.each(displayData, function (item) {
-                    var source = me.displayToSource(item);
-                    sourceArray.push(source);
-                });
-                this.displayData = displayData;
-                return sourceArray;
-            }
-            var sourceData = {};
-            _.each(displayData, function (value, key) {
-                var sourceFieldName = me.model.structure[key] && me.model.structure[key].mappingName;
-                if (typeof sourceFieldName != "undefined") {
-                    sourceData[sourceFieldName] = me.dataOfSource(value, me.model.structure[key].mappingType);
-                }else{
-                  sourceData[key] = value;
-                }
-            });
-            if (this.sourceData instanceof Array) {
-                var oldSourceData = this.sourceData[_.findIndex(this.sourceData, function (chr) {
-                    return chr.id == sourceData.id
-                })];
-                sourceData = _.assign(oldSourceData, sourceData);
-            } else
-                sourceData = _.assign(this.sourceData, sourceData);
             return sourceData;
         };
         /**
-         * 改变显示模型某个字段的值
-         * @param index 当数据是一个数组时传入数据的下标
+         * 显示数据映射为源数据
+         * @param sourceData
+         * @returns {{}}
+         */
+        this.sourceToDisplay = function (sourceData) {
+            var me = this;
+            this.sourceData = sourceData;
+            if (sourceData instanceof Array) {
+                var displayArray = [];
+                _.each(sourceData, function (item) {
+                    var disp = me.sourceToDisplay(item);
+                    displayArray.push(JSON.parse(JSON.stringify(disp)));
+                });
+                this.sourceData = sourceData;
+                return displayArray;
+            }
+            var displayData = {};
+            _.each(sourceData, function (value, key) {
+                var dispFieldName = me.model.structure[key] && me.model.structure[key].mappingName;
+                if (typeof dispFieldName != "undefined") {
+                    displayData[dispFieldName] = me.dataOfDisplay(value, me.model.structure[key].mappingType);
+                }else{
+                    displayData[key] = value;
+                }
+            });
+            if (this.displayData instanceof Array) {
+                var oldDisplayData = this.displayData[_.findIndex(this.displayData, function (chr) {
+                    return chr.id == displayData.id
+                })];
+                displayData = _.assign(oldDisplayData, displayData);
+            } else
+                displayData = _.assign(this.displayData, displayData);
+            return displayData;
+        };
+        /**
+         * 改变源模型某个字段的值
+         * @param key 当数据是一个数组时传入数据的下标
          * @param field 字段名称
          * @param value 改变后的值
          * @returns {{}}
          */
-        this.changeDisplayDataField = function (key, field, value) {
+        this.changeSourceDataField = function (key, field, value) {
             var me = this;
-            var CorrectValue = this.dataOfDisplay(value, this.model.structure[field].type);
-            var displayData = this.displayData;
-            if (displayData instanceof Array) {
-                var index = _.findIndex(displayData, function (item) {
+            var CorrectValue = this.dataOfSource(value, this.model.structure[field].type);
+            var sourceData = this.sourceData;
+            if (sourceData instanceof Array) {
+                var index = _.findIndex(sourceData, function (item) {
                     return item[me.key] == key;
                 });
                 if (index != -1) {
-                    displayData[index][field] = CorrectValue;
-                    displayData[index] = this.displayDataCheck(displayData[index]);
+                    sourceData[index][field] = CorrectValue;
+                    sourceData[index] = this.sourceDataCheck(sourceData[index]);
                 }
             } else {
-                displayData[field] = CorrectValue;
-                displayData = this.displayDataCheck(displayData);
+                sourceData[field] = CorrectValue;
+                sourceData = this.sourceDataCheck(sourceData);
             }
-            this.displayData = displayData;
-            return this.displayData;
+            this.sourceData = sourceData;
+            return this.sourceData;
         };
         this.countForField = function (fieldName) {
             var count = 0;
-            _.each(this.displayData, function (item) {
+            _.each(this.sourceData, function (item) {
                 count += (+item[fieldName]);
             });
             return count
@@ -168,7 +169,7 @@ module.exports = (dataType)=>{
          * @param type
          * @returns {*}
          */
-        this.dataOfDisplay = function (value, type) {
+        this.dataOfSource = function (value, type) {
             var newValue;
             switch (type) {
                 case "string":
@@ -207,7 +208,7 @@ module.exports = (dataType)=>{
          * @param type
          * @returns {*}
          */
-        this.dataOfSource = function (value, type) {
+        this.dataOfDisplay = function (value, type) {
             var newValue;
             switch (type) {
                 case "string":
