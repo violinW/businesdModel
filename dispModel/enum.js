@@ -1,6 +1,6 @@
 'use strict';
-const Logger = require('logger-romens');
-const logger = new Logger();
+const log4js = require('log4js');
+const logger = log4js.getLogger();
 const _ = require('lodash');
 
 let enumList = {};
