@@ -1,5 +1,5 @@
 'use strict';
-const Logger = require('logger-romens');
+const Logger = require('log4js');
 const logger = new Logger();
 const _ = require('lodash');
 
